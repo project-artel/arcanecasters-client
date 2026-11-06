@@ -18,6 +18,7 @@ namespace Global.Auth
         /// </summary>
         public static IRefreshTokenStore SelectForCurrentPlatform()
         {
+            if (MatchingServerCatalog.LocalQaEnabled) return new InMemoryRefreshTokenStore();
 #if UNITY_EDITOR_WIN
             return new WindowsDpapiRefreshTokenStore();
 #elif UNITY_EDITOR_OSX

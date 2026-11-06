@@ -18,7 +18,8 @@ namespace Data
         /// sent back to a request whose host shares its registrable domain. Same server
         /// (168.107.6.191), and the certificate already covers this name.
         /// </summary>
-        public static readonly Server AccountServer =
-            new Server("deploy", "account.theevilent.com", 443, true);
+        public static readonly Server AccountServer = MatchingServerCatalog.LocalQaEnabled
+            ? new Server("local", "127.0.0.1", 6210)
+            : new Server("deploy", "account.theevilent.com", 443, true);
     }
 }
