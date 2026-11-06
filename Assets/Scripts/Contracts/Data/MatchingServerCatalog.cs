@@ -45,13 +45,20 @@ namespace Data
         /// 관리자 선택 전에는 운영 서버를 사용한다. 개발 빌드도 같은 기본값을 쓰며,
         /// 관리자는 드롭다운에서 다른 서버를 선택할 수 있다.
         /// </summary>
-        private static readonly MatchingServerOption BuildDefault = Deploy;
+        public static bool LocalQaEnabled { get; } =
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            System.Environment.GetEnvironmentVariable("ARCANECASTERS_LOCAL_QA") == "1";
+#else
+            false;
+#endif
+
+        private static readonly MatchingServerOption BuildDefault = LocalQaEnabled ? Local : Deploy;
 
         public static MatchingServerOption Current { get; private set; } = BuildDefault;
 
         public static void Select(MatchingServerOption option)
         {
-            if (option == null || option == Current)
+            if (LocalQaEnabled || option == null || option == Current)
                 return;
 
             Current = option;
@@ -65,6 +72,7 @@ namespace Data
         /// </summary>
         public static MatchingServerOption FindStoredOption()
         {
+            if (LocalQaEnabled) return Local;
             string storedKey = PlayerPrefs.GetString(SelectedKeyPreference, null);
             if (string.IsNullOrEmpty(storedKey))
                 return null;
