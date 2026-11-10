@@ -1,5 +1,9 @@
 {
   "mcpServers": {
+    "artel-macro-mcp": {
+      "type": "http",
+      "url": "https://stage-mcp.artel.kr/mcp"
+    },
     "unityMCP": {
       "type": "http",
       "url": "${UNITY_MCP_URL:-http://127.0.0.1:8080/mcp}"
