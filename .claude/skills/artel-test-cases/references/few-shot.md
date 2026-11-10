@@ -1,0 +1,14 @@
+# ARTEL TC authoring examples
+
+The game details below are illustrative. Confirm actual inputs, evidence, and
+expected results for the target build.
+
+| Candidate and available evidence | Authoring decision |
+| --- | --- |
+| **A locked door rejects an attempt without a key.** The door is reachable without the key and the interaction can display a locked notice. | **Authorable.** Interact with the door without a key. Verify that the locked notice appears and the door remains closed. The notice confirms the attempt reached the game; a closed door alone does not. |
+| **A boss defeat opens the reward chest.** The build already has a scene travel cheat and the chest's open state remains visible. | **Authorable.** Use the cheat to reach the boss room, fight the living boss through gameplay, and check the chest. If access to the boss room is under test, use the actual entry route instead. |
+| **Dodging at the attack cue enables a counterattack.** The cue is too fast for the QA agent, but existing test support can issue the real dodge input. The counterattack remains available long enough to check. | **Needs build verification.** Add a small behavior using the real input path and verify it in a development build. After the dodge, read the counterattack availability independently. A behavior that sets availability directly would bypass the result being tested. |
+| **A projectile is visibly rendered in flight.** It can cross the screen between screenshots. | **Deferred for manual coverage.** Skip the automated flight case. If existing evidence shows that the intended attack damaged the designated enemy, write a separate case for that lasting result. It provides no verdict about how the projectile looked. |
+| **A weapon upgrade increases actual damage in a survivors-like game.** The HUD shows attack power and the run shows combined damage from several weapons and damage-over-time effects. | **Defer the damage case.** The hits and targets cannot be attributed, and baseline conditions cannot be matched. If the same weapon's detail view shows attack power going from 20 to 25 after the upgrade, author a separate UI case. Do not add a practice arena or new combat telemetry as part of authoring. |
+| **A weapon upgrade increases damage on a known target.** The build already supports repeatable setup and exposes the source, target, and damage applied per hit. | **Authorable.** Hit the same type of target under matched conditions before and after taking the actual upgrade. Use the two attributed hit values to check the specified increase. An unrelated hit or an unmatched critical hit does not count. |
+| **Using the last potion removes its inventory row.** The use button and inventory are available, but code appears to leave a zero-count row. | **Authorable with a suspected defect.** Keep row removal as the expected result. Report the code discrepancy and leave the actual verdict to the QA run. |

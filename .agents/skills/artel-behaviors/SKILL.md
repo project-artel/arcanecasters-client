@@ -25,7 +25,11 @@ Files next to this one:
 - [`references/choosing-behaviors.md`](references/choosing-behaviors.md) — which behaviors to make, and which not to
 - [`references/lifecycle.md`](references/lifecycle.md) — how a behavior ends, the wire actions, every failure message
 - [`references/wordventure-example.cs`](references/wordventure-example.cs) — `auto_cast_spells` and `pass_turns` in WordVenture
-- [`../artel-cheats/references/compile-guard.md`](../artel-cheats/references/compile-guard.md) — the `#if ARTEL_GAME_FUNCTIONS` wrap every behavior file needs
+
+The [`artel-cheats` compile guard guide](../artel-cheats/references/compile-guard.md) covers the
+`#if ARTEL_GAME_FUNCTIONS` wrap every behavior file needs. To retrieve it through MCP, call
+`skill_guide(topic="artel-cheats", reference="references/compile-guard.md")`. With the CLI, run
+`artel guide show artel-cheats --reference references/compile-guard.md`.
 
 ## Before you start
 
