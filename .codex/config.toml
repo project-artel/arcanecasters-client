@@ -20,5 +20,9 @@ UV_CACHE_DIR = "/tmp/elevenlabs-uv-cache"
 UV_TOOL_DIR = "/tmp/elevenlabs-uv-tools"
 ELEVENLABS_MCP_OUTPUT_MODE = "files"
 
-[mcp_servers.artel-macro-mcp]
-url = "https://stage-mcp.artel.kr/mcp"
+[marketplaces.artel-plugins]
+source_type = "git"
+source = "https://github.com/project-artel/artel-plugins.git"
+
+[plugins."artel@artel-plugins"]
+enabled = true
