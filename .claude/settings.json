@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "artel-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "project-artel/artel-plugins"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "artel@artel-plugins": true
+  }
+}
