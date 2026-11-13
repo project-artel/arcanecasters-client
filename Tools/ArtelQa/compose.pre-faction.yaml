@@ -1,0 +1,10 @@
+# 첫 Compose 파일은 samples/arcanecasters/compose.yaml이다. build 경로는 그 디렉터리 기준이다.
+services:
+  lobby:
+    image: arcanecasters-qa-lobby:pre-faction-7c3b504-qa60533f9
+    build:
+      context: ./arcanecasters-client/Library/PreFactionQaSources/lobby
+  game:
+    image: arcanecasters-qa-game:pre-faction-ebfb74cf-qaf6e840ed
+    build:
+      context: ./arcanecasters-client/Library/PreFactionQaSources/game

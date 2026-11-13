@@ -18,6 +18,12 @@ Skipping it produces failures that look like missing projects or broken installs
 
 ## Step 1 — Resolve the binary
 
+Choose player build output outside `Library/`. Unity 2022.3 rejects an output
+such as `Library/ArtelSdkUpdateVerification/player/Game.exe` with
+`ArgumentException: Invalid build path`, and `BuildPipeline.BuildPlayer` can
+return null. Use an ignored `Build/` directory for players, keep logs in
+`Library/` if needed, and check the report for null before reading its summary.
+
 Run the resolver and export what it prints:
 
 ```bash
