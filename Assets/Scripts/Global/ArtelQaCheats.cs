@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Artel;
 using Data;
+using Global.Auth;
 using LobbyScene;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -21,6 +22,16 @@ namespace Global
         {
             FireSlime, WaterSlime, RockSlime, ElectricSlime, LeafSlime, WindSlime,
             RockGolem, AquaArcher, GroundTower
+        }
+
+        [ArtelCheat("게임 계정을 로그아웃하고 저장된 세션을 지운 뒤 로그인 화면으로 돌아갑니다. ARTEL 연결은 유지합니다. 게스트 계정은 다시 로그인할 수 없습니다.",
+            when: nameof(HasAuthSession))]
+        public static IEnumerator LogoutToLogin()
+        {
+            var session = AuthSession.Instance;
+            yield return session.StartCoroutine(session.Logout());
+            yield return SceneManager.LoadSceneAsync("LoginScene");
+            yield return "scene=LoginScene; loggedOut=true";
         }
 
         [ArtelCheat("QA 봇 매치를 만들고 전투에 입장합니다.", when: nameof(InLobby))]
@@ -67,6 +78,8 @@ namespace Global
         public static IEnumerator SpawnUnit(Unit unit, Side side, [CheatRange(0, 18)] float x,
             [CheatRange(0, 10)] float z) =>
             Command(new { operation = "spawn_unit", unit = unit.ToString(), side = side.ToString(), x, z });
+
+        private static bool HasAuthSession() => AuthSession.Instance != null;
 
         private static bool InLobby() =>
             SceneContext.User != null && !string.IsNullOrEmpty(SceneContext.JwtToken)
