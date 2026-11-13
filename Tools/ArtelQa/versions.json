@@ -1,0 +1,21 @@
+{
+  "client": {
+    "base": "a3dded5a",
+    "qaCheats": ["2e58f12e", "c9fef14c"],
+    "artelSdk": "465e18c88512f858db83741fb9b96d64a658b2be",
+    "runtimeEnvironment": {"ARCANECASTERS_LOCAL_QA": "1"}
+  },
+  "lobby": {
+    "repository": "https://github.com/project-artel/arcanecasters-lobby.git",
+    "base": "7c3b50454f0a4c71b4eb3debb62e2abcc013c4db",
+    "qaPatch": "60533f967daaaaa33df6b1c72aa88ec81f9c7b4e",
+    "source": "Library/PreFactionQaSources/lobby"
+  },
+  "game": {
+    "repository": "https://github.com/project-artel/arcanecasters-game.git",
+    "base": "ebfb74cf65ca9c85906b5ed96780e98ffea724b7",
+    "qaPatch": "f6e840eda30d294ad56442e930f8cf0fd701c7d2",
+    "source": "Library/PreFactionQaSources/game"
+  },
+  "databasePolicy": "기존 로컬 QA DB와 마이그레이션을 유지하며 되돌리거나 초기화하지 않는다."
+}
