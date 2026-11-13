@@ -48,6 +48,13 @@ Follow [hand-edited-assets.md](.agents/docs/hand-edited-assets.md) before changi
 
 ## Testing Guidelines
 
+Before adding a bulk ARTEL coroutine cheat, check the installed SDK's
+`GameFunctionActions.CheatCoroutineLimitSeconds` (60 seconds in the pinned SDK).
+Keep request timeouts and the whole operation below that limit, report partial
+completion, and make retries read current server counts before granting more.
+The all-magic grant needs one request per magic; a long loop can be stopped
+after only some cards were granted, and replaying additive grants duplicates them.
+
 Before changing in-game card hover, gameplay pause, or ping timing, read
 [card-hover-pause.md](.agents/docs/card-hover-pause.md). Freezing scaled time
 also freezes a scaled ping timer, while the authoritative server keeps running.
