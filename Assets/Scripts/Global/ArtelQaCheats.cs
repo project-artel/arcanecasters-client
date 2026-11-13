@@ -6,7 +6,10 @@ using System.Linq;
 using System.Text;
 using Artel;
 using Data;
+using Data.Deck;
+using DeckScene;
 using Global.Auth;
+using Global.Serialization;
 using LobbyScene;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -47,6 +50,45 @@ namespace Global
         {
             var id = PositiveId(magicId);
             yield return Post(LobbyUrl + "/magics", new { magicId = id, count });
+        }
+
+        [ArtelCheat("로그인한 QA 계정의 모든 플레이어용 마법을 각각 최소 minimumCount장 보유하도록 부족분만 지급합니다. 15장이면 같은 마법만으로 덱을 만들 수 있습니다. 중단 후 다시 호출하면 부족분부터 보충합니다.",
+            when: nameof(InLobby))]
+        public static IEnumerator GrantAllMagics([CheatRange(1, 100)] int minimumCount)
+        {
+            if (minimumCount < 1 || minimumCount > 100)
+                throw new ArgumentOutOfRangeException(nameof(minimumCount));
+
+            var userId = SceneContext.UserID;
+            var server = ServerList.MatchingServer.url.TrimEnd('/');
+            var deadline = UnityEngine.Time.realtimeSinceStartup + 40f;
+            CardDto[] cards = null;
+            yield return ReadCardPool(server, value => cards = value);
+            var pending = cards.Where(card => card.count < minimumCount).OrderBy(card => card.id).ToArray();
+            DeckManagementViewModel.ClearCachedUserData();
+
+            var completed = 0;
+            foreach (var card in pending)
+            {
+                var context = $"전체 마법 지급 {completed}/{pending.Length}종 완료, magicId={card.id}. ";
+                if (!InLobby() || SceneContext.UserID != userId || ServerList.MatchingServer.url.TrimEnd('/') != server)
+                    throw new InvalidOperationException(context + "계정 또는 서버·화면이 바뀌어 중단했습니다.");
+                // SDK가 치트를 60초 후 중단하므로 마지막 요청과 보유 목록 재조회 시간을 남긴다.
+                if (UnityEngine.Time.realtimeSinceStartup >= deadline)
+                    throw new InvalidOperationException(context + "시간 제한으로 중단했습니다. 다시 호출하면 부족분만 보충합니다.");
+
+                var amount = minimumCount - card.count;
+                yield return Post(server + "/api/artel-qa/magics", new { magicId = card.id, count = amount },
+                    failureContext: context, timeoutSeconds: 5);
+                completed++;
+            }
+
+            if (!InLobby() || SceneContext.UserID != userId || ServerList.MatchingServer.url.TrimEnd('/') != server)
+                throw new InvalidOperationException("지급 후 계정 또는 서버·화면이 바뀌어 보유 수량을 확인하지 못했습니다.");
+            yield return ReadCardPool(server, value => cards = value);
+            if (cards.Any(card => card.count < minimumCount || !card.unlocked))
+                throw new InvalidOperationException("일부 마법의 보유 수량 또는 해금 반영을 확인하지 못했습니다. 다시 호출해 부족분을 보충하세요.");
+            yield return $"magics={cards.Length}; toppedUp={completed}; minimumCount={minimumCount}";
         }
 
         [ArtelCheat("현재 QA 매치에서 지정한 진영의 마나를 설정합니다.", when: nameof(InQaMatch))]
@@ -119,17 +161,35 @@ namespace Global
             return Post(url, body);
         }
 
-        private static IEnumerator Post(string url, object payload, Action<JObject> receive = null)
+        private static IEnumerator ReadCardPool(string server, Action<CardDto[]> receive)
+        {
+            using var request = UnityWebRequest.Get(server + "/api/users/mine/cardLists");
+            request.timeout = 8;
+            Server.SetAcceptLanguage(request);
+            Server.SetAuthorization(request);
+            yield return request.SendWebRequest();
+            if (request.result != UnityWebRequest.Result.Success)
+                throw new InvalidOperationException($"보유 마법 목록 조회 실패 (HTTP {request.responseCode})");
+            if (!JsonCodec.TryDeserialize(request.downloadHandler.text, out CardPoolDto pool, out _)
+                || pool.cards == null || pool.cards.Length == 0
+                || pool.cards.Any(card => card == null || card.id <= 0 || card.count < 0)
+                || pool.cards.Select(card => card.id).Distinct().Count() != pool.cards.Length)
+                throw new InvalidOperationException("보유 마법 목록이 비어 있거나 올바르지 않습니다.");
+            receive(pool.cards);
+        }
+
+        private static IEnumerator Post(string url, object payload, Action<JObject> receive = null,
+            string failureContext = null, int timeoutSeconds = 10)
         {
             using var request = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST);
             request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(payload)));
             request.downloadHandler = new DownloadHandlerBuffer();
-            request.timeout = 10;
+            request.timeout = timeoutSeconds;
             request.SetRequestHeader("Content-Type", "application/json");
             request.SetRequestHeader("Authorization", "Bearer " + SceneContext.JwtToken);
             yield return request.SendWebRequest();
             if (request.result != UnityWebRequest.Result.Success)
-                throw new InvalidOperationException($"QA 요청 실패 (HTTP {request.responseCode})");
+                throw new InvalidOperationException($"{failureContext}QA 요청 실패 (HTTP {request.responseCode})");
             var body = JObject.Parse(request.downloadHandler.text);
             receive?.Invoke(body);
             if (receive == null)
