@@ -31,15 +31,16 @@ DB 초기화나 마이그레이션 되돌리기는 필요하지 않다. 기존 �
 
 ## 클라이언트 실행
 
-Unity `2022.3.34f1`로 Windows Development 빌드를 만든다. 출력은 `Build/` 아래에 둔다.
-실행 환경 변수 `ARCANECASTERS_LOCAL_QA=1`을 설정해야 로컬 계정 서버
-`127.0.0.1:6210`, 로비 `127.0.0.1:6209`에 연결한다.
-환경 변수를 빼면 기본 서버 설정을 사용하므로 주의한다.
+Unity 2022.3.34f1에서 클라이언트 디렉터리를 기준으로 Windows Development 빌드를 만든다.
 
 ```powershell
-$env:ARCANECASTERS_LOCAL_QA = '1'
-artel game start --build ./Build/ArtelQa/20261113/ArcaneCasters.exe --project 53 --timeout 60 --json
+& 'C:\Program Files\Unity\Hub\Editor\2022.3.34f1\Editor\Unity.exe' -batchmode -quit -nographics -projectPath "$PWD" -buildTarget Win64 -executeMethod ArtelQaBuild.BuildWindows64 -logFile "Library/artel-qa-build.log"
+artel game start --build ./Build/ArtelQa/Local/ArcaneCasters.exe --project 53 --timeout 60 --json
 ```
+
+이 빌드는 EXE를 직접 열어도 로컬 계정 서버 `127.0.0.1:6210`과 로비
+`127.0.0.1:6209`에 연결한다. 일반 Development 빌드나 Editor에서 로컬
+QA 서버를 쓰려면 실행 환경에 `ARCANECASTERS_LOCAL_QA=1`을 설정한다.
 
 실행 중인 QA가 있으면 기존 플레이어를 교체하기 전에 해당 실행의 종료를 확인한다.
 로그아웃·전체 카드 지급 치트는 Development 빌드에 포함되며 카드 지급은 QA 허용 계정에서 사용한다.
