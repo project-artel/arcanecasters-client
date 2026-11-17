@@ -27,6 +27,12 @@ namespace Global
             RockGolem, AquaArcher, GroundTower
         }
 
+        [ArtelOverrideCheat("reset_game", "현재 매치를 나가고 저장된 로그인 세션으로 게임 시작 흐름을 다시 실행합니다.")]
+        private static IEnumerator ResetGame()
+        {
+            yield return SceneManager.LoadSceneAsync("LoginScene");
+        }
+
         [ArtelCheat("게임 계정을 로그아웃하고 저장된 세션을 지운 뒤 로그인 화면으로 돌아갑니다. ARTEL 연결은 유지합니다. 게스트 계정은 다시 로그인할 수 없습니다.",
             when: nameof(HasAuthSession))]
         public static IEnumerator LogoutToLogin()

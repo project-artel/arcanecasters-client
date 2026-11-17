@@ -281,7 +281,7 @@
       "url": "https://packages.unity.com"
     },
     "kr.artel.sdk": {
-      "version": "https://github.com/project-artel/artel-sdk.git?path=/Packages/kr.artel.sdk#465e18c88512f858db83741fb9b96d64a658b2be",
+      "version": "https://github.com/project-artel/artel-sdk.git?path=/Packages/kr.artel.sdk#a9a378b6d3003b448222dd5979b56f1366cbf9f5",
       "depth": 0,
       "source": "git",
       "dependencies": {
@@ -292,7 +292,7 @@
         "com.unity.modules.imgui": "1.0.0",
         "com.unity.modules.unitywebrequest": "1.0.0"
       },
-      "hash": "465e18c88512f858db83741fb9b96d64a658b2be"
+      "hash": "a9a378b6d3003b448222dd5979b56f1366cbf9f5"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",
