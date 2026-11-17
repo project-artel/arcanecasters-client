@@ -46,7 +46,9 @@ namespace Data
         /// 관리자는 드롭다운에서 다른 서버를 선택할 수 있다.
         /// </summary>
         public static bool LocalQaEnabled { get; } =
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
+#if DEVELOPMENT_BUILD && ARCANECASTERS_LOCAL_QA_PLAYER
+            true;
+#elif UNITY_EDITOR || DEVELOPMENT_BUILD
             System.Environment.GetEnvironmentVariable("ARCANECASTERS_LOCAL_QA") == "1";
 #else
             false;
